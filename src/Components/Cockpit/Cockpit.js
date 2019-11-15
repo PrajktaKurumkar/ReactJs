@@ -1,10 +1,20 @@
-import React from "react";
+import React, { useContext /*,{ useEffect }*/ } from "react";
 import classes from "./Cockpit.css";
+import AuthContex from "../../Contex/authContex";
 const Cockpit = props => {
+  /*useEffect(() => {
+    const timer = setTimeout(() => {
+      alert("Saved data to cloud");
+    }, 1000);
+    return () => {
+      clearTimeout(timer);
+    };
+  });*/
+  const authContex = useContext(AuthContex);
   const Classs = [];
   let btnclass = [];
   if (props.showPerson) {
-    btnclass = [Classs.Red];
+    btnclass = [classes.Red];
   }
 
   if (props.persons.length <= 2) {
@@ -15,16 +25,14 @@ const Cockpit = props => {
   }
   return (
     <div className={classes.Cockpit}>
-      <h1>Hi, I am React App</h1>
-      <p className={classes.join(" ")}>This is really working!!</p>
-      <button
-        className={btnclass.join(" ")}
-        onClick={this.togglePersonsHandler}
-      >
+      <h1>{props.title}</h1>
+      <p className={Classs.join(" ")}>This is really working!!</p>
+      <button className={btnclass} onClick={props.click}>
         Toggle Person
       </button>
+      <button onClick={authContex.logIn}>Log In</button>
     </div>
   );
 };
 
-export default Cockpit;
+export default React.memo(Cockpit);

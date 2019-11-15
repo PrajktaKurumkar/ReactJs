@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 
-import Classs from "./App.css";
+import classes from "./App.css";
 import Persons from "../Components/Persons/Persons";
 import Cockpit from "../Components/Cockpit/Cockpit";
+import Aux from "../HOC/Auxillery";
+import withClass from "../HOC/withClass";
+import AuthContex from "../Contex/authContex";
 //import styled from "styled-Component";
 //import ErrorBoundry from "./ErrorBoundry/ErrorBoundry";
 
@@ -19,31 +22,48 @@ import Cockpit from "../Components/Cockpit/Cockpit";
   }`*/
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    console.log("[App.js] constructor");
+  }
   state = {
     persons: [
-      { id: "ddf", name: "Max", age: "31" },
+      { id: "ddf", name: 123, age: "31" },
       { id: "sdw", name: "Manu", age: "25" },
       { id: "asd", name: "Stephani", age: "13" }
     ],
     otherState: "some other value",
-    showPerson: false
+    showPerson: false,
+    authenticated: false,
+    showCockpit: true
   };
+  static getDerivedStateFromProps(props, state) {
+    console.log("[App.js]getDerivedStateFromProps", props);
+    return state;
+  }
+  componentDidMount() {
+    console.log("[App.js]componentDidMount");
+  }
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log("[App.js] shouldComponentUpdate");
+    return true;
+  }
+
+  componentDidUpdate() {}
 
   nameChangedHandler = (event, id) => {
     const personIndex = this.state.persons.findIndex(p => {
       return p.id === id;
     });
-    const person = { ...this.state.persons[personIndex] };
+    const person = {
+      ...this.state.persons[personIndex]
+    };
     person.name = event.target.value;
 
     const persons = [...this.state.persons];
-    persons[personIndex];
+    persons[personIndex] = person;
     this.setState({
-      persons: [
-        { name: "Max", age: "31" },
-        { name: event.target.value, age: "25" },
-        { name: "Staphani", age: "13" }
-      ]
+      persons: persons
     });
   };
   deletePersonHandler = personIndex => {
@@ -55,6 +75,9 @@ class App extends Component {
   togglePersonsHandler = () => {
     const doesShow = this.state.showPerson;
     this.setState({ showPerson: !doesShow });
+  };
+  LogInHandler = () => {
+    this.setState({ authenticated: true });
   };
   render() {
     /*const style = {
@@ -69,32 +92,44 @@ class App extends Component {
 
     if (this.state.showPerson) {
       persons = (
-        <div>
-          <Persons
-            persons={this.state.persons}
-            click={this.deletePersonHandler}
-            changed={this.nameChangedHandler}
-          />
-        </div>
+        <Persons
+          persons={this.state.persons}
+          click={this.deletePersonHandler}
+          changed={this.nameChangedHandler}
+          isAuthenticated={this.state.authenticated}
+        />
       );
       //style.backgroundColor = "red";
     }
 
-    const classes = [];
-    if (this.state.persons.length <= 2) {
-      classes.push(Classs.red);
-    }
-    if (this.state.persons.length <= 1) {
-      classes.push(Classs.bold);
-    }
     return (
-      <div>
-        <Cockpit
-          showPerson={this.state.showPerson}
-          persons={this.state.persons}
-        />
-      </div>
+      <Aux classes={classes.App}>
+        <button
+          onClick={() => {
+            this.setState({ showCockpit: false });
+          }}
+        >
+          Remove Cockpit
+        </button>
+
+        <AuthContex.Provider
+          value={{
+            authenticated: this.state.authenticated,
+            logIn: this.LogInHandler
+          }}
+        >
+          {this.state.showCockpit ? (
+            <Cockpit
+              title={this.props.title}
+              showPerson={this.state.showPerson}
+              persons={this.state.persons}
+              click={this.togglePersonsHandler}
+            />
+          ) : null}
+          {persons}
+        </AuthContex.Provider>
+      </Aux>
     );
   }
 }
-export default App;
+export default withClass(App, classes.App);

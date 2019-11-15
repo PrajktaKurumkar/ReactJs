@@ -5,7 +5,10 @@ import App from "./Containers/App";
 //import Application from "./Rahul assignment/Application";
 import registerServiceWorker from "./registerServiceWorker";
 
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(
+  <App title="Person's Information" />,
+  document.getElementById("root")
+);
 registerServiceWorker();
 //ReactDOM.render(<Application />, document.getElementById("root"));
 //registerServiceWorker();

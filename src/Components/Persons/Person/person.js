@@ -1,5 +1,9 @@
-import React from "react";
+import React, { Component } from "react";
+import PropType from "prop-types";
 import Classes from "./person.css";
+import Aux from "../../../HOC/Auxillery";
+import WithClass from "../../../HOC/withClass";
+import AuthContex from "../../../Contex/authContex";
 //import styled from "styled-Component";
 
 /*const StyledDiv = styled.div`
@@ -10,19 +14,41 @@ import Classes from "./person.css";
   padding: 16px;
   text-align: center;
 `;*/
-const person = props => {
-  /* const rnd = Math.random();
-  if (rnd > 0.7) {
-    throw new Error("Oops..! Something went wrong..");
-  }*/
-  return (
-    <div className={Classes.Person}>
-      <p onClick={props.click}>
-        I'am a {props.name} and i am {props.age} years old.
-      </p>
-      <p>{props.children}</p>
-      <input type="text" onChange={props.changed} />
-    </div>
-  );
+
+class Person extends Component {
+  constructor(props) {
+    super(props);
+    this.inputElementRef = React.createRef();
+  }
+  componentDidMount() {
+    this.inputElementRef.current.focus();
+  }
+  render() {
+    return (
+      <Aux className={Classes.Person}>
+        <AuthContex.Consumer></AuthContex.Consumer>
+          {contex =>
+            contex.authenticated ? <p>Authenticated</p> : <p>Please Log In</p>
+          }
+      
+        <p onClick={this.props.click}>
+          I'am a {this.props.name} and i am {this.props.age} years old.
+        </p>
+        <p>{this.props.children}</p>
+        <input
+          type="text"
+          ref={this.inputElementRef}
+          onChange={this.props.changed}
+          value={this.props.name}
+        />
+      </Aux>
+    );
+  }
+}
+Person.PropType = {
+  click: PropType.func,
+  name: PropType.string,
+  age: PropType.string,
+  changed: PropType.func
 };
-export default person;
+export default WithClass(Person, Classes.Person);
